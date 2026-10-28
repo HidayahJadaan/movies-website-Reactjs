@@ -19,18 +19,18 @@ function App() {
     }
   }
   const [errorMesg, setErrorMsg] = useState("");
-const [moviesList, setMoviesList]= useState([]);
-const [isLoading, setIsLoading]= useState(false);
+  const [moviesList, setMoviesList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
 
 
-  const fetchMovies = async () => {
+  const fetchMovies = async (searchQuery = '') => {
 
     setIsLoading(true);
     setErrorMsg("");
     try {
 
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      const endpoint = searchQuery ? `${API_BASE_URL}/search/movie?query=${searchQuery}` : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
 
       const response = await fetch(endpoint, API_OPTIONS);
 
@@ -44,7 +44,7 @@ const [isLoading, setIsLoading]= useState(false);
       const data = await response.json();
       // console.log(data);
 
-      if(data.response === 'False'){
+      if (data.response === 'False') {
         setErrorMsg(data.error || "Failed to fetch movies");
         setMoviesList([]);
         return;
@@ -57,7 +57,7 @@ const [isLoading, setIsLoading]= useState(false);
       console.error(`ERROR FEtching Movies: ${error}`);
       setErrorMsg("ERROR Fetching moveis, Please Try again!");
 
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   }
@@ -66,9 +66,9 @@ const [isLoading, setIsLoading]= useState(false);
 
     // https://api.themoviedb.org/3/person/{person_id}/movie_credits
 
-    fetchMovies();
+    fetchMovies(searchTerm);
 
-  }, []);
+  }, [searchTerm]);
 
 
   return (
@@ -93,21 +93,21 @@ const [isLoading, setIsLoading]= useState(false);
             {isLoading ? (
               // <p className='text-white'>Loading ... </p>
               <Spinner />
-            ): errorMesg ? (
+            ) : errorMesg ? (
               <p className='text-red-500'>{errorMesg}</p>
-            ):(
+            ) : (
 
               <ul>
-                {moviesList.map((movie)=>{
-                  return <MovieCard key={movie.id} movie={movie}/>
-                  
+                {moviesList.map((movie) => {
+                  return <MovieCard key={movie.id} movie={movie} />
+
                   // <p  key={movie.id} className='text-white'>
                   //   {movie.title}
                   // </p>
                 })}
               </ul>
             )
-            
+
             }
           </section>
 
